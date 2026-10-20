@@ -1,0 +1,74 @@
+name: Android ve Windows Otomatik Derleme
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  # 1. ANDROID DERLEME ADIMI
+  build-android:
+    name: Android APK Derleme
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodları Depodan Al (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Java JDK 17 Kurulumu
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Flutter Ortamını Kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x' # En güncel kararlı sürümü otomatik çeker
+          channel: 'stable'
+          cache: true
+
+      - name: Bağımlılıkları Yükle
+        run: flutter pub get
+
+      - name: APK Dosyasını Derle
+        run: flutter build apk --release
+
+      - name: APK Dosyasını GitHub'a Yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  # 2. WINDOWS DERLEME ADIMI
+  build-windows:
+    name: Windows EXE Derleme
+    runs-on: windows-latest
+    steps:
+      - name: Kodları Depodan Al (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Flutter Ortamını Kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Windows Masaüstü Desteğini Aktif Et
+        run: flutter config --enable-windows-desktop
+
+      - name: Bağımlılıkları Yükle
+        run: flutter pub get
+
+      - name: Windows Uygulamasını Derle
+        run: flutter build windows --release
+
+      - name: Windows Çıktısını Zip Formatına Getir (PowerShell)
+        run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\windows_release.zip
+
+      - name: Windows EXE Dosyasını GitHub'a Yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-app-release-exe
+          path: build/windows_release.zip
