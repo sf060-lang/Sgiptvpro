@@ -1,0 +1,25 @@
+name: iptv_pro
+description: Android ve Windows icin Xtream Codes uyumlu IPTV oynatici (libmpv, 4K/8K, MPEG-TS, HLS).
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  crypto: ^3.0.5
+  # libmpv tabanli oynatici: MPEG-TS, HLS, MKV, MP4, HEVC/H.265, AV1, 4K/8K
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
